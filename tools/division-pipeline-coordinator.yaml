@@ -1,0 +1,22 @@
+name: division-pipeline-coordinator
+description: Coordinates cross-functional task pipelines, manages structured handoffs, and aggregates multi-agent deliverables.
+input_schema:
+  type: object
+  properties:
+    pipeline_stages:
+      type: array
+      items:
+        type: string
+      description: Ordered list of division personas participating in the pipeline.
+    handoff_payload:
+      type: object
+      description: Context data, design assets, or code passed to the next persona stage.
+    execution_mode:
+      type: string
+      enum:
+        - sequential
+        - parallel_fanout
+      description: Workflow coordination pattern.
+  required:
+    - pipeline_stages
+    - handoff_payload

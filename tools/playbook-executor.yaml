@@ -1,0 +1,16 @@
+name: playbook-executor
+description: Loads, parses, and executes structured strategy playbooks and operational runbooks.
+input_schema:
+  type: object
+  properties:
+    playbook_name:
+      type: string
+      description: Name or relative path of the playbook located in strategy/.
+    parameters:
+      type: object
+      description: Input variables and project context required by the playbook.
+    step_index:
+      type: integer
+      description: Specific step number to execute or resume from.
+  required:
+    - playbook_name

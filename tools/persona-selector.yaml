@@ -1,0 +1,16 @@
+name: persona-selector
+description: Selects and activates specialized agent persona profiles from agency divisions based on task domain requirements.
+input_schema:
+  type: object
+  properties:
+    division:
+      type: string
+      description: Target division (e.g. engineering, design, marketing, finance, product).
+    task_prompt:
+      type: string
+      description: The user request or problem description to be solved.
+    min_confidence:
+      type: number
+      description: Minimum affinity score required to commit persona selection.
+  required:
+    - task_prompt

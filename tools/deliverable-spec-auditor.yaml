@@ -1,0 +1,19 @@
+name: deliverable-spec-auditor
+description: Audits completed agent deliverables against domain acceptance criteria, brand guidelines, and checklists.
+input_schema:
+  type: object
+  properties:
+    deliverable_content:
+      type: string
+      description: The artifact, code, or document content under review.
+    division:
+      type: string
+      description: The agency division standard to validate against.
+    criteria_rules:
+      type: array
+      items:
+        type: string
+      description: Specific acceptance rules or verification checklist items.
+  required:
+    - deliverable_content
+    - division

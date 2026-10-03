@@ -1,0 +1,21 @@
+spec_version: "0.1.0"
+name: "agency-agents"
+version: "1.0.0"
+description: "Complete AI agency workforce platform providing specialized agent expert personas across engineering, design, marketing, research, and product."
+author: "Agency Agents Contributors <support@agency-agents.ai>"
+license: "MIT"
+metadata:
+  domain: "Productivity / AI Agency Workforce & Specialized Domain Personas"
+  category: "Productivity"
+  framework: "Agency Agents (Markdown / Claude / OpenAI / Multi-Agent)"
+  language: "Markdown"
+skills:
+  - "agency-persona-routing"
+  - "multi-division-collaboration"
+  - "deliverable-quality-assurance"
+  - "playbook-strategy-execution"
+tools:
+  - "persona-selector"
+  - "division-pipeline-coordinator"
+  - "deliverable-spec-auditor"
+  - "playbook-executor"
