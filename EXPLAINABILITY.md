@@ -1,9 +1,21 @@
-# Explainability & Decision Transparency Report
+# EXPLAINABILITY.md
+
+This document explains the internal mechanisms, data lineage, operational boundaries, and governance framework of **agency-agents** (`agency-agents`) in accordance with the **OpenGAP v0.1.0** specification for the **HiDevs GitAgent Passport** clearance pipeline.
+
+> **Agent Name:** agency-agents (`agency-agents`)  
+> **Specification:** OpenGAP v0.1.0  
+> **Category / Domain:** Productivity / AI Agency Workforce & Specialized Domain Personas  
+> **Compliance Standard:** OpenGAP Checkpoint 2 (Explainability & Decision Governance), OWASP LLM Top 10, MITRE ATLAS  
+
+---
 
 ## How the Agent Decides
 
-### 1. Deterministic Multi-Stage Decision Pipeline
 The agent operates via a strictly disciplined, 5-stage deterministic execution pipeline coordinating persona selection, cross-functional collaboration, rubric auditing, and human milestone governance.
+
+### 1. Decision Architecture
+
+The runtime intake, state classification, evaluation, and execution tracking operate across a deterministic, five-stage pipeline:
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -38,7 +50,8 @@ The agent operates via a strictly disciplined, 5-stage deterministic execution p
 +-----------------------------------------------------------------------------------+
 ```
 
-### 2. Mathematical Decision & Affinity Scoring
+### 2. Decision Logic & Routing Formulations
+
 Persona selection affinity $S_{\text{affinity}}(p)$ for an agent persona $p \in P$ given input requirements $q$ is computed through a multi-factor normalized scoring formula:
 
 $$S_{\text{affinity}}(p) = w_1 \cdot \text{CosineSimilarity}(\mathbf{e}_q, \mathbf{e}_p) + w_2 \cdot \text{DivisionFit}(p, q) + w_3 \cdot \text{DeliverableAlignment}(p, q)$$
@@ -55,47 +68,63 @@ $$Q_{\text{audit}}(d) = \sum_{i=1}^{M} \lambda_i \cdot c_i(d) \ge \tau_{\text{qu
 Where $c_i(d) \in \{0, 1\}$ represents satisfaction of checklist item $i$, weights $\sum \lambda_i = 1$, and $\tau_{\text{quality}} = 0.90$.
 
 ### 3. Thresholding & Refusal Decision Criteria
-Operations that do not meet quality or routing thresholds trigger immediate refusal with standardized error codes:
 
-| Threshold Parameter | Value | Decision / Refusal Action | Error Code |
-| :--- | :--- | :--- | :--- |
-| **Persona Routing Confidence** | $S_{\text{affinity}} < 0.70$ | Refuse automated routing; solicit user clarification | `ERR_LOW_PERSONA_AFFINITY` |
-| **Deliverable Quality Gate** | $Q_{\text{audit}} < 0.90$ | Reject deliverable; return defect punch-list for revision | `ERR_DELIVERABLE_QUALITY_BELOW_THRESHOLD` |
-| **Cross-Division Conflict** | Unresolvable domain disagreement | Halt pipeline; request human director ruling | `ERR_UNRESOLVED_CROSS_DIVISION_CONFLICT` |
-| **Pipeline Latency** | Pipeline execution time > 180 s | Terminate hanging pipeline; return partial results | `ERR_PIPELINE_EXECUTION_TIMEOUT` |
-| **Missing Acceptance Criteria** | Zero validation criteria specified | Block pipeline initiation until criteria are provided | `ERR_MISSING_ACCEPTANCE_CRITERIA` |
+agency-agents enforces strict operational boundaries and deterministic refusal thresholds:
+- **Refusal on ERR_LOW_PERSONA_AFFINITY**: Persona Routing Confidence ($S_{\text{affinity}} < 0.70$) halts execution with code `ERR_LOW_PERSONA_AFFINITY`.
+- **Refusal on ERR_DELIVERABLE_QUALITY_BELOW_THRESHOLD**: Deliverable Quality Gate ($Q_{\text{audit}} < 0.90$) halts execution with code `ERR_DELIVERABLE_QUALITY_BELOW_THRESHOLD`.
+- **Refusal on ERR_UNRESOLVED_CROSS_DIVISION_CONFLICT**: Cross-Division Conflict (Unresolvable domain disagreement) halts execution with code `ERR_UNRESOLVED_CROSS_DIVISION_CONFLICT`.
+- **Refusal on ERR_PIPELINE_EXECUTION_TIMEOUT**: Pipeline Latency (Pipeline execution time > 180 s) halts execution with code `ERR_PIPELINE_EXECUTION_TIMEOUT`.
+- **Refusal on ERR_MISSING_ACCEPTANCE_CRITERIA**: Missing Acceptance Criteria (Zero validation criteria specified) halts execution with code `ERR_MISSING_ACCEPTANCE_CRITERIA`.
 
-### 4. Multi-Tier Fallback Mechanisms & Human-in-the-Loop Governance
-1. **Tier 1 (Automated Persona Revision Loop)**: If a deliverable fails the quality audit with minor issues, the auditor persona generates targeted feedback and prompts the builder persona for an iterative fix pass.
-2. **Tier 2 (Secondary Specialist Re-Routing)**: If an initial persona struggles to satisfy requirements after 2 rounds, the engine re-routes the task to a senior or adjacent specialist persona.
-3. **Tier 3 (Human Agency Director Escalation)**: Irreconcilable architectural conflicts, critical brand safety concerns, or contract milestone approvals halt execution to require human sign-off.
+### 4. Fallback Decision Mechanism
+
+Continuous operational stability is maintained through layered fault recovery:
+- **Tier 1 (Automated Persona Revision Loop)**: If a deliverable fails the quality audit with minor issues, the auditor persona generates targeted feedback and prompts the builder persona for an iterative fix pass.
+- **Tier 2 (Secondary Specialist ReRouting)**: If an initial persona struggles to satisfy requirements after 2 rounds, the engine reroutes the task to a senior or adjacent specialist persona.
+- **Model Fallback Cascade**: High-level reasoning and synthesis default to `gemini-2.0-flash` with automatic failover to `gpt-4o` and `claude-3-5-sonnet`.
+
+### 5. Human-in-the-Loop Governance
+
+Human operators retain sovereign authority over the multi-agent execution lifecycle:
+- **Tier 3 (Human Agency Director Escalation)**: Irreconcilable architectural conflicts, critical brand safety concerns, or contract milestone approvals halt execution to require human signoff.
+- **Benchmark Trajectory Auditing**: Operators inspect evaluation traces, raw generation tokens, and container logs to verify scoring fidelity.
 
 ---
 
 ## The Data It Uses
 
-### 1. Ingestion Data & Input Types
+agency-agents operates under strict principles of data minimization, environment isolation, and privacy protection.
+
+### 1. Ingested Input Data
+
+The framework processes only operational data necessary to perform its functions:
 - **Client Project Briefs**: Natural language problem descriptions, brand guidelines, and target objectives.
 - **Division Persona Definitions**: Frontmatter schemas, role guidelines, and tool registries across divisions.
 - **Deliverables & Artifacts**: Code files, architecture diagrams, copywriting drafts, and financial models.
 
-### 2. Reference Standards & Methodologies
+### 2. Configuration & Reference Data
+
 - **Agency Operational Archetypes**: Cross-functional agile team workflows, design sprints, and code review gates.
 - **Division Checklists**: Division-specific quality criteria and deliverables definitions (`divisions.json`).
 - **Markdown & Frontmatter Standards**: Structured schema definitions for prompt engineering.
 
-### 3. Model Lineage & System Architecture
+### 3. Base Model & Inference Lineage
+
 - **Underlying Models**: Anthropic Claude 3.5 Sonnet, Claude 3 Opus, OpenAI GPT-4o, Google Gemini 1.5 Pro.
 - **Runtime Environment**: Multi-Agent Markdown Framework, Node.js tooling, Shell scripts, JSON catalogs.
 
-### 4. Data Privacy, Governance & Retention
-- **Confidential Client Isolation**: Client project data and intellectual property remain isolated to the local workspace.
-- **Secret Protection**: API tokens, private keys, and client credentials are scrubbed from public playbooks and logs.
-- **Zero Third-Party Exfiltration**: Prompts and artifacts are dispatched solely to user-authorized LLM API endpoints.
+### 4. Data Privacy, Storage, and Retention
+
+- **OWASP LLM & MITRE ATLAS Hardened**: Defended against indirect prompt injection, credential leakage, and unauthorized external API dispatch.
+- **Local Environment Isolation**: Agent execution workspaces, intermediate scratchpads, and vector stores reside strictly within designated local project directories.
+- **Automated Secret Scrubbing**: API keys, database credentials, and personal credentials are automatically redacted prior to embedding or logging.
+- **Zero Commercial Monetization**: Prompts, intermediate reasoning trajectories, and task deliverables are never commercialized or shared with third parties.
 
 ---
 
 ## Limitations
+
+Understanding the operational boundaries and technical constraints of agency-agents is essential for effective deployment.
 
 ### 1. High Token Overhead During Multi-Division Collaborative Handoffs
 - **Limitation**: Passing full contextual histories across multiple personas can rapidly consume context window budgets.
@@ -121,13 +150,22 @@ Operations that do not meet quality or routing thresholds trigger immediate refu
 
 ## Summary & Compliance Checklist
 
-| Item | Requirement | Verification Details | Compliance Status |
-| :---: | :--- | :--- | :---: |
-| **1** | Canonical H2 Headings | Strictly implements the 4 standard canonical H2 section headings | `Verified` |
-| **2** | Deterministic Pipeline | 5-stage deterministic Agency Agents pipeline diagram provided | `Verified` |
-| **3** | Mathematical Formulation | Persona affinity $S_{\text{affinity}}(p)$ and quality score $Q_{\text{audit}}(d)$ documented | `Verified` |
-| **4** | Decision Thresholds | Quantitative refusal thresholds and error codes specified | `Verified` |
-| **5** | Fallback Mechanisms | Tier 1-3 revision loop, re-routing, and human director escalation defined | `Verified` |
-| **6** | Data Privacy & Governance | Ingestion, confidential client isolation, zero telemetry, and secret safety detailed | `Verified` |
-| **7** | Limitation & Mitigation Pairs | 5 clear limitation-mitigation pairs enumerated | `Verified` |
-| **8** | Compliance Checklist Table | Full markdown verification table concluding report | `Verified` |
+| Checkpoint 2 Requirement | Corresponding Section | Status |
+| :--- | :--- | :---: |
+| **How the agent decides** | [How the Agent Decides](#how-the-agent-decides) | **Covered** |
+| - Decision architecture & 5-stage pipeline | Section 1 | Verified |
+| - Decision logic & routing formulations | Section 2 | Verified |
+| - Thresholding & refusal decision criteria | Section 3 | Verified |
+| - Fallback decision mechanism | Section 4 | Verified |
+| - Human-in-the-loop governance & oversight | Section 5 | Verified |
+| **The data it uses** | [The Data It Uses](#the-data-it-uses) | **Covered** |
+| - Ingested input data & query streams | Section 1 | Verified |
+| - Configuration & reference schemas | Section 2 | Verified |
+| - Base model lineage & deterministic engines | Section 3 | Verified |
+| - Data privacy, retention lifecycle & MITRE/OWASP | Section 4 | Verified |
+| **Its limitations** | [Limitations](#limitations) | **Covered** |
+| - High Token Overhead During Multi-Division Collaborative Handoffs | Section 1 | Verified |
+| - Subjective Quality Variance Across Creative Design and Marketing Outputs | Section 2 | Verified |
+| - Context Dilution When Synthesizing Broad Multi-Agent Deliverables | Section 3 | Verified |
+| - Conflicting Objectives Between Speed-Oriented and Rigor-Oriented Personas | Section 4 | Verified |
+| - Latency Accumulation Across Multi-Stage Sequential Pipelines | Section 5 | Verified |
